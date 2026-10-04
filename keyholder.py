@@ -98,11 +98,19 @@ def main():
     print(f"[=] ground truth -> {gt_path}")
 
     if a.hold:
-        print(f"[*] PID {os.getpid()} - khoa dang trong RAM. Dump xong roi Enter de thoat...")
+        # Giu KEY SCHEDULE song trong RAM, khong chi 16 byte khoa tho.
+        # findaes/aeskeyfind/keyscan tim key schedule (176/208/240 byte) chu
+        # khong tim 16 byte khoa; schedule chi ton tai khi context ma hoa con
+        # song. Tao mot encryptor va KHONG finalize de OpenSSL giu schedule
+        # (mo phong ransomware that dang trong qua trinh ma hoa).
+        held = Cipher(algorithms.AES(key), modes.CBC(os.urandom(BLOCK))).encryptor()
+        held.update(b"\x00" * 64)        # ep OpenSSL nap key schedule vao RAM
+        print(f"[*] PID {os.getpid()} - key schedule dang trong RAM. Dump xong roi Enter de thoat...")
         try:
             input()
         except (EOFError, KeyboardInterrupt):
             pass
+        held.update(b"\x00" * 16)        # cham lai sau input de held khong bi giai phong som
 
 
 if __name__ == "__main__":
