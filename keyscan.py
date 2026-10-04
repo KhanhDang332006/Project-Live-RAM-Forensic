@@ -117,9 +117,9 @@ def main():
         "scope": scope,
     } for off, bits, kh in found]
 
+    loc = "off" if a.no_entropy else f"min_unique={a.min_unique}"
     print(f"[=] quet {len(data):,} byte trong {dt:.2f}s "
-          f"(entropy={'off' if a.no_entropy else a.entropy}, "
-          f"byteswap={'on' if a.byteswap else 'off'})")
+          f"(loc tho={loc}, byteswap={'on' if a.byteswap else 'off'})")
     if a.baseline:
         print(f"[=] loai {len(baseline)} khoa co trong baseline")
     for k in keys:
