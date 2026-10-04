@@ -1,0 +1,38 @@
+# Bằng chứng nặng: lưu ở nơi lưu chung, hash ghi trong custody_log.csv (DATA_CONTRACT.md mục 2)
+*.vmem
+*.vmsn
+*.vmss
+*.vmdk
+*.vhd
+*.vhdx
+*.dmp
+*.raw
+*.mem
+*.E01
+*.e01
+*.pcap
+*.pcapng
+
+# Mẫu ransomware thật: chỉ lưu dạng nén có mật khẩu ở nơi lưu riêng, KHÔNG đưa lên repo
+*.exe
+*.dll
+*.scr
+*.zip
+*.7z
+*.rar
+
+# Đầu ra của decrypt.py
+decrypted/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Hệ điều hành / editor
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+~$*
