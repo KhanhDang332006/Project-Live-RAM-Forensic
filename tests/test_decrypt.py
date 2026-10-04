@@ -38,6 +38,7 @@ def make_fixtures(d):
         + os.urandom(4000) + b"\xff\xd9")
     put("ghi_chu.txt", "Tài liệu nội bộ, không phát tán.\n".encode("utf-8") * 60)
     put("ngan.txt", b"hello")
+    put("nho.csv", b"a,b\n1,2\n")  # cỡ file mồi của keyholder: ciphertext chỉ 1 khối
 
 
 def run(cwd, script, *args):
@@ -57,8 +58,25 @@ class DecryptPipeline(unittest.TestCase):
         cls.tmp = tempfile.mkdtemp(prefix="nt334_")
         cls.plain = os.path.join(cls.tmp, "samples", "plain")
         make_fixtures(cls.plain)
+        open(os.path.join(cls.plain, ".gitkeep"), "w").close()  # repo thật có file này trong samples/plain
         r = run(cls.tmp, "tools/make_manifest.py")
         assert r.returncode == 0, r.stderr
+
+    def test_manifest_bo_qua_file_an(self):
+        with open(os.path.join(self.tmp, "manifest.csv"), newline="", encoding="utf-8-sig") as f:
+            names = [row["filename"] for row in csv.DictReader(f)]
+        self.assertNotIn(".gitkeep", names)
+        self.assertEqual(len(names), 9)
+
+    def test_file_nho_khong_manifest_chi_khoa_rac(self):
+        """Khóa rác lọt padding trên file 1 khối cho ra vài byte rác có entropy thấp:
+        không được nhận, kể cả khi không có manifest."""
+        self.encrypt("s", "prepend")
+        self.write_keys("keys_s.json", decoys=2000)
+        r = self.decrypt("s", "keys_s.json", "--profile", "prepend", "--manifest=")
+        self.assertEqual(r.returncode, 1)
+        for name, row in read_report(os.path.join(self.tmp, "rep_s.csv")).items():
+            self.assertEqual(row["status"], "no_key", name)
 
     @classmethod
     def tearDownClass(cls):

@@ -64,6 +64,19 @@ pip install -r requirements.txt
 
 Mọi lệnh bên dưới chạy từ thư mục gốc của repo.
 
+**Trên Linux** (đã test trên Ubuntu 26.04, Python 3.14; Windows test trên Python 3.8):
+
+- Gõ `python3` thay cho `python`.
+- Ubuntu/Debian bản mới chặn `pip install` vào Python hệ thống, nên cài trong môi trường ảo (thư mục `.venv/` đã có trong `.gitignore`):
+  ```bash
+  sudo apt install python3-venv
+  python3 -m venv .venv && source .venv/bin/activate
+  pip install -r requirements.txt
+  ```
+- Đặt múi giờ `Asia/Ho_Chi_Minh` để log ghi `+07:00` (DATA_CONTRACT.md mục 3).
+- Muốn chạy kiểu `./tools/decrypt.py` thì phải `chmod +x`, và file phải lấy qua `git clone` trên Linux. File chép thẳng từ máy Windows còn ký tự xuống dòng CRLF nên dòng shebang sẽ lỗi. Gọi bằng `python3 tools/...` thì không bị ảnh hưởng.
+- Tham số `--manifest=` (bỏ trống) viết giống nhau trên cả bash và PowerShell.
+
 ## Sử dụng
 
 ### Tạo manifest cho bộ file mồi
@@ -87,7 +100,7 @@ python tools/decrypt.py --keys ground_truth.json
 python tools/decrypt.py --keys keys.json --profile overwrite16
 
 # Giống điều tra thật: không có bản gốc, vá header theo cấu trúc file
-python tools/decrypt.py --keys keys.json --profile overwrite16 --manifest "" --patch template
+python tools/decrypt.py --keys keys.json --profile overwrite16 --manifest= --patch template
 ```
 
 Kết quả: file gốc trong `decrypted/` và `report.csv` (DATA_CONTRACT.md mục 8). Lệnh trả exit code 1 nếu còn file chưa giải mã được.

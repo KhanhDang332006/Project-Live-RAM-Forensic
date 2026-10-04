@@ -6,7 +6,7 @@ Tương ứng Experiment part 3 của bài báo (mục 3.2.3, 4.3.3, 5.x.3).
 
     python tools/decrypt.py --keys ground_truth.json          # profile lấy từ ground_truth
     python tools/decrypt.py --keys keys.json --profile overwrite16
-    python tools/decrypt.py --keys keys.json --profile overwrite16 --manifest "" --patch template
+    python tools/decrypt.py --keys keys.json --profile overwrite16 --manifest= --patch template
                                                                # giống điều tra thật: không có bản gốc
 
 Cách chọn khóa đúng trong hàng trăm khóa ứng viên:
@@ -46,10 +46,11 @@ PROFILES = {
 }
 
 OLE = bytes.fromhex("d0cf11e0a1b11ae1")
-MAGIC = {"pdf": b"%PDF", "docx": b"PK\x03\x04", "xlsx": b"PK\x03\x04",
+MAGIC = {"pdf": b"%PDF", "docx": b"PK\x03\x04", "xlsx": b"PK\x03\x04", "zip": b"PK\x03\x04",
          "doc": OLE, "xls": OLE, "jpg": b"\xff\xd8\xff"}
-ZIP_EXT = ("docx", "xlsx")
+ZIP_EXT = ("docx", "xlsx", "zip")
 OLE_EXT = ("doc", "xls")
+TEXT_EXT = ("txt", "csv")
 # Header đoán cho loại không dựng lại chính xác được: file vẫn mở được nhưng hash có thể lệch.
 # Phải dài đúng 16 byte = số byte mất, để offset phía sau giữ nguyên (bảng xref của PDF dựa vào offset).
 GUESS_HEAD = {
@@ -167,9 +168,13 @@ def entropy(b):
 
 
 def plausible(ext, data, lost):
-    """Khi không có manifest: phần giải mã được có đúng cấu trúc của loại file không."""
+    """Khi không có manifest: phần giải mã được có đúng cấu trúc của loại file không.
+
+    Trả về True / False, hoặc None khi quá ít dữ liệu để kết luận: vài byte rác do khóa sai
+    sinh ra vẫn có entropy thấp và dễ là UTF-8 hợp lệ, nên không được coi là "đúng".
+    """
     if not data:
-        return True  # file gốc ≤ 16 byte ở overwrite16: không còn gì để kiểm tra
+        return None  # file gốc ≤ 16 byte ở overwrite16: không còn gì để kiểm tra
     if lost == 0 and ext in MAGIC:
         return data.startswith(MAGIC[ext])
     if ext in ZIP_EXT:
@@ -178,7 +183,9 @@ def plausible(ext, data, lost):
         return b"%%EOF" in data[-2048:]
     if ext == "jpg":
         return b"\xff\xd9" in data[-32:]
-    if ext == "txt":
+    if ext in TEXT_EXT:
+        if len(data) < 16:
+            return None
         for cut in range(4):  # mất 16 byte đầu có thể cắt ngang một ký tự UTF-8
             try:
                 data[cut:].decode("utf-8")
@@ -186,6 +193,8 @@ def plausible(ext, data, lost):
             except UnicodeDecodeError:
                 pass
         return False
+    if len(data) < 256:  # entropy của vài chục byte luôn thấp, không phân biệt được với rác
+        return None
     return entropy(data[:1 << 16]) < 7.5
 
 
@@ -198,8 +207,8 @@ def tf(b):
 def decrypt_file(path, keys, profile, mrow=None, patch="auto", name=None, verified=()):
     """Thử lần lượt các khóa trên một file. Trả về (dòng report, dữ liệu đã giải mã hoặc None).
 
-    verified: các khóa đã giải mã đúng file khác. File gốc ≤ lost_head byte không còn dữ liệu
-    nào để kiểm chứng (mọi khóa lọt padding đều "đúng"), nên chỉ nhận khóa trong tập này.
+    verified: các khóa đã giải mã đúng file khác. File quá nhỏ để tự kiểm chứng (khóa rác lọt
+    padding cũng cho ra kết quả "hợp lệ") chỉ nhận khóa trong tập này.
     """
     prof = PROFILES[profile] if isinstance(profile, str) else profile
     name = name or os.path.basename(path)
@@ -225,30 +234,40 @@ def decrypt_file(path, keys, profile, mrow=None, patch="auto", name=None, verifi
             data = unpad(AES.new(k["raw"], AES.MODE_CBC, iv).decrypt(ct), 16)
         except ValueError:
             continue
-        if not data and k["key_hex"] not in verified:
-            weak_skipped = True
-            continue
         head, how, note = patch_head(ext, data, lost, patch, mrow)
-        if not data:
-            note = "file gốc ≤ %d byte: khóa được xác nhận qua các file khác" % lost
         out = head + data
-        if mrow and hashlib.sha256(out).hexdigest() == mrow["sha256"]:
-            return _finish(row, k, out, how, note, mrow, ext, sha=True, strong=bool(data)), out
+        sha_ok = bool(mrow) and hashlib.sha256(out).hexdigest() == mrow["sha256"]
+        # Khớp hash trên dữ liệu giải mã thật -> chắc chắn đúng khóa.
+        # (data rỗng thì out chỉ là header lấy từ manifest: khớp hash không chứng minh gì.)
+        if data and sha_ok:
+            return _finish(row, k, out, how, note, mrow, ext, sha=True, strong=True), out
         # Có manifest và kết quả lẽ ra phải khớp tuyệt đối (không mất byte, hoặc vá từ manifest)
-        # mà hash lệch -> khóa sai, không nhận làm phương án dự phòng.
-        exact_expected = mrow and (lost == 0 or how == "manifest")
-        if fallback is None and not exact_expected and plausible(ext, data, lost):
-            fallback = (k, out, how, note, bool(data))
+        # mà hash lệch -> khóa sai.
+        if data and mrow and (lost == 0 or how == "manifest"):
+            continue
+        verdict = plausible(ext, data, lost)
+        if verdict is False:
+            continue
+        if verdict is None:  # file quá nhỏ để tự kiểm chứng
+            if k["key_hex"] not in verified:
+                weak_skipped = True
+                continue
+            note = "; ".join(x for x in (note, "file quá nhỏ để tự kiểm chứng: khóa được xác nhận"
+                                               " qua các file khác") if x)
+            return _finish(row, k, out, how, note, mrow, ext,
+                           sha=sha_ok if mrow else None, strong=False), out
+        if fallback is None:
+            fallback = (k, out, how, note)
     if fallback:
-        k, out, how, note, strong = fallback
+        k, out, how, note = fallback
         sha = None if not mrow else False
         if sha is False:
             note = "; ".join(x for x in (note, "hash không khớp manifest") if x)
-        return _finish(row, k, out, how, note, mrow, ext, sha=sha, strong=strong), out
+        return _finish(row, k, out, how, note, mrow, ext, sha=sha, strong=True), out
     row["note"] = "không khóa nào giải mã được (đã thử %d khóa)" % len(keys)
     if weak_skipped:
-        row["note"] = ("file gốc ≤ %d byte: chỉ xác nhận được bằng khóa đã giải mã đúng file khác,"
-                       " chưa có khóa nào như vậy" % lost)
+        row["note"] = ("file quá nhỏ để tự kiểm chứng: chỉ nhận khóa đã giải mã đúng file khác,"
+                       " chưa có khóa nào như vậy")
     return row, None
 
 
@@ -308,7 +327,7 @@ def main():
     ap.add_argument("--in", dest="src", default="samples/encrypted", help="thư mục file .locked")
     ap.add_argument("--profile", choices=sorted(PROFILES) + ["custom"],
                     help="mặc định: lấy từ trường profile của ground_truth.json")
-    ap.add_argument("--manifest", default="manifest.csv", help='"" để không dùng (giống điều tra thật)')
+    ap.add_argument("--manifest", default="manifest.csv", help='viết --manifest= (bỏ trống) để không dùng, giống điều tra thật')
     ap.add_argument("--patch", choices=["auto", "manifest", "template", "none"], default="auto",
                     help="cách vá header khi mất byte đầu (auto: manifest nếu có, không thì template)")
     ap.add_argument("--out", default="decrypted", help="thư mục ghi file đã giải mã")

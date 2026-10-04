@@ -54,7 +54,7 @@ def main():
 
     paths = []
     for dirpath, _, files in os.walk(args.src):
-        paths += [os.path.join(dirpath, n) for n in files]
+        paths += [os.path.join(dirpath, n) for n in files if not n.startswith(".")]  # bỏ .gitkeep, file ẩn
     if not paths:
         sys.exit("Thư mục rỗng: %s" % args.src)
 

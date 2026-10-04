@@ -59,7 +59,7 @@ Dump RAM và ảnh đĩa **không** đưa vào git vì quá nặng. Chúng nằm
 - Mã hóa ký tự: UTF-8. JSON không có BOM. CSV phân cách bằng dấu phẩy, có dòng tiêu đề.
 - CSV do script của nhóm tạo **có BOM** ở đầu file để Excel hiển thị đúng tiếng Việt. Script nào đọc CSV phải mở bằng `encoding="utf-8-sig"` (đọc được cả file có lẫn không có BOM).
 - Hex: chữ thường, không dấu cách. Offset ghi dạng chuỗi có tiền tố `0x` (ví dụ `"0x1a2b"`).
-- Thời gian: ISO 8601 có múi giờ, ví dụ `2026-10-04T15:30:00+07:00`.
+- Thời gian: ISO 8601 có múi giờ, ví dụ `2026-10-04T15:30:00+07:00`. Mọi máy chạy script (kể cả VM Linux trong lab, thường mặc định UTC) đặt múi giờ `Asia/Ho_Chi_Minh` (`sudo timedatectl set-timezone Asia/Ho_Chi_Minh`), để mọi log cùng ghi `+07:00` và timeline không lẫn giờ.
 - Trường không có giá trị thì ghi `null` (JSON) hoặc để trống (CSV), không bỏ hẳn trường đó.
 
 ---

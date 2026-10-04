@@ -20,6 +20,8 @@
 *.zip
 *.7z
 *.rar
+# ngoại lệ: file mồi dạng zip (không phải mẫu mã độc) được phép đưa lên
+!samples/**/*.zip
 
 # Đầu ra của decrypt.py
 decrypted/

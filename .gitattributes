@@ -1,0 +1,14 @@
+# Không cho git đổi LF <-> CRLF trên file mẫu và bằng chứng.
+# Windows mặc định core.autocrlf=true: git chèn 0x0D trước mỗi 0x0A khi checkout,
+# làm SHA-256 của file mồi lệch và hỏng ciphertext của file .locked.
+samples/** -text
+*.locked binary
+*.vmem binary
+*.vmsn binary
+*.vmss binary
+*.dmp binary
+*.raw binary
+*.mem binary
+*.E01 binary
+*.pcap binary
+*.pcapng binary

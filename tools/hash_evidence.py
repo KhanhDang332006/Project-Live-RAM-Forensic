@@ -21,6 +21,7 @@ Xem tóm tắt:
 import argparse
 import csv
 import hashlib
+import ntpath
 import os
 import sys
 import time
@@ -114,7 +115,8 @@ def cmd_verify(args):
     new, bad = [], 0
     for path, base in baseline.items():
         if not os.path.isfile(path) and args.base:  # máy khác: tìm theo tên trong --base
-            path = os.path.abspath(os.path.join(args.base, os.path.basename(path)))
+            # ntpath hiểu cả "\" lẫn "/": log ghi trên Windows vẫn verify được trên Linux và ngược lại
+            path = os.path.abspath(os.path.join(args.base, ntpath.basename(path)))
         if not os.path.isfile(path):
             digest, size, result = "", "", "MISSING"
         else:

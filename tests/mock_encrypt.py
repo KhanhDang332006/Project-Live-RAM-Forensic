@@ -43,6 +43,8 @@ def main():
     n = 0
     for dirpath, _, names in os.walk(args.src):
         for name in names:
+            if name.startswith("."):  # bỏ .gitkeep, file ẩn
+                continue
             src = os.path.join(dirpath, name)
             dst = os.path.join(args.out, os.path.relpath(src, args.src)) + ".locked"
             os.makedirs(os.path.dirname(dst), exist_ok=True)
