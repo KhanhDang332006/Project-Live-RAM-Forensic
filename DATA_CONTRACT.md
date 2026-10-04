@@ -226,8 +226,8 @@ Do `decrypt.py` xuất ra; đây là bảng "file giải mã thành công/thất
 | `key_source` | `source` của khóa đó (tên dump) |
 | `key_hex` | Khóa đã dùng |
 | `header_patch` | `none` / `manifest` / `template` |
-| `magic_ok` | `true` / `false` |
-| `sha256_ok` | `true` / `false` |
+| `magic_ok` | `true` / `false`. Có manifest thì so với `magic_hex`; không có thì so với magic chuẩn của loại file, để trống nếu loại đó không có magic (txt) |
+| `sha256_ok` | `true` / `false`; để trống nếu chạy không có manifest |
 | `status` | `ok` / `no_key` / `error` |
 | `note` | Ghi chú lỗi, nếu có |
 
