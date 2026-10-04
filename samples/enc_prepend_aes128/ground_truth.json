@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "batch": "enc_prepend_aes128",
+  "profile": "prepend",
+  "bits": 128,
+  "mode": "AES-CBC-PKCS7",
+  "iv_location": "prepend_16",
+  "lost_head_bytes": 0,
+  "key_hex": "9dc4f09d7f2a38d17566d5c008d43052",
+  "created": "2026-10-04T16:30:17+07:00",
+  "files": [
+    {
+      "locked": "book.zip.locked",
+      "orig": "book.zip",
+      "orig_sha256": "0df2151df060bcbaf7594a0e9ebc885e5b433bbdd091f5521edaaca813b97804",
+      "iv_hex": "9e69101e919579c9e8d0d69bd7c6b9a8",
+      "plaintext_bytes": 159
+    },
+    {
+      "locked": "data.csv.locked",
+      "orig": "data.csv",
+      "orig_sha256": "a96c895ce817d59f2d4c231103ea786caf02cf5a54daa6780bfe1e322accf4c0",
+      "iv_hex": "d9e4c0f7cff4553c6159e8aae0fa214f",
+      "plaintext_bytes": 39
+    },
+    {
+      "locked": "note.txt.locked",
+      "orig": "note.txt",
+      "orig_sha256": "d05e0e46fd57d33bbe1d687601a5a437993f96023fd28ba52f720dba9bb4d675",
+      "iv_hex": "375c5eec2e18b58ac9f7823433a1575a",
+      "plaintext_bytes": 71
+    },
+    {
+      "locked": "report.pdf.locked",
+      "orig": "report.pdf",
+      "orig_sha256": "cfa3181c1ee36e8bce5e39f84959f4558ea7ba32c0e4539a8ab3c8ce8c716ec6",
+      "iv_hex": "0e841f0e6b2c5b185420ef9c7a6226d2",
+      "plaintext_bytes": 69
+    }
+  ],
+  "keys": [
+    {
+      "source": "ground_truth",
+      "bits": 128,
+      "key_hex": "9dc4f09d7f2a38d17566d5c008d43052",
+      "tool": "ground_truth",
+      "pid": null,
+      "scope": null,
+      "offset": null
+    }
+  ]
+}
