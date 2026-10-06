@@ -22,7 +22,7 @@ Phương pháp tái hiện theo bài báo:
 ## Luồng xử lý
 
 ```
-chạy mẫu trong VM ──► chụp RAM (.vmem) ──► keyscan.py ──► keys.json ──┐
+chạy mẫu trong VM ──► chụp RAM (.vmem) ──► tools/keyscan.py ──► keys.json ──┐
         │                                                             ▼
         └──► file bị mã hóa (*.locked) ──────────────────────► decrypt.py ──► file gốc + report.csv
                                                                       ▲
@@ -161,8 +161,9 @@ python tools/hash_evidence.py list     # tóm tắt các bằng chứng
 | `tools/hash_evidence.py` | Khánh Đăng | Xong |
 | `tools/decrypt.py` – profile `prepend`, `overwrite16`, `custom` | Khánh Đăng | Xong, chờ test trên file thật của keyholder |
 | `decrypt.py` – profile `phobos` | Khánh Đăng | Chưa làm (chờ đặc tả, DATA_CONTRACT.md mục 6.3) |
-| keyholder (chương trình mô phỏng mã hóa) | Minh Hoàng | Đang làm |
-| `keyscan.py` | Minh Hoàng | Đang làm |
+| `tools/aes_schedule.py` – sinh AES key schedule (verify FIPS-197) | Minh Hoàng | Xong |
+| `tools/keyscan.py` – dò khóa AES trong dump | Minh Hoàng | Xong (known-answer test PASS) |
+| `tests/keyholder.py` – sinh test-vector, `--hold` giữ khóa trong RAM | Minh Hoàng | Xong |
 | Script chạy thí nghiệm + chụp RAM | Trung Hải | Chưa làm |
 | Tool tự động chạy cả chuỗi | Trung Hải | Chưa làm |
 

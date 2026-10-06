@@ -34,12 +34,12 @@ keyholder.py  ->  (dump RAM)  ->  keyscan.py  ->  keys.json  ->  decrypt.py  -> 
 (176/208/240 byte). Đây là "công thức" để `keyscan` kiểm tra một đoạn byte có phải khóa thật không.
 
 **Vì sao tin được:** có hàm kiểm thử bằng **test vector FIPS-197** (chuẩn chính thức của AES).
-Chạy `python aes_schedule.py` sẽ tự so với đáp án trong chuẩn → đúng mới chạy tiếp.
+Chạy `python tools/aes_schedule.py` sẽ tự so với đáp án trong chuẩn → đúng mới chạy tiếp.
 
 **Dùng riêng:** không, đây là thư viện cho `keyscan.py` gọi.
 
 ```bash
-python aes_schedule.py      # in ra: expand_key OK, AES-128 schedule = 176 byte...
+python tools/aes_schedule.py      # in ra: expand_key OK, AES-128 schedule = 176 byte...
 ```
 
 ---
@@ -57,12 +57,12 @@ python aes_schedule.py      # in ra: expand_key OK, AES-128 schedule = 176 byte.
 
 **Chạy:**
 ```bash
-python keyscan.py dump.vmem                          # dò cả 128/192/256
-python keyscan.py dump.vmem --bits 128 --out keys.json
-python keyscan.py dump.vmem --baseline clean.vmem    # loại khóa đã có trong dump sạch
-python keyscan.py dump.vmem --no-entropy             # tắt lọc thô (chậm, để đo thời gian)
-python keyscan.py dump.vmem --byteswap               # chế độ khóa bị đảo byte trong word
-python keyscan.py proc.dmp --pid 4321 --scope process   # khi quét riêng 1 tiến trình
+python tools/keyscan.py dump.vmem                          # dò cả 128/192/256
+python tools/keyscan.py dump.vmem --bits 128 --out keys.json
+python tools/keyscan.py dump.vmem --baseline clean.vmem    # loại khóa đã có trong dump sạch
+python tools/keyscan.py dump.vmem --no-entropy             # tắt lọc thô (chậm, để đo thời gian)
+python tools/keyscan.py dump.vmem --byteswap               # chế độ khóa bị đảo byte trong word
+python tools/keyscan.py proc.dmp --pid 4321 --scope process   # khi quét riêng 1 tiến trình
 ```
 
 **Các tùy chọn quan trọng:**
@@ -89,7 +89,7 @@ chính là điểm để **so sánh công cụ** trong báo cáo. Quét cả dum
 tách riêng vùng nhớ một tiến trình rồi mới quét:
 ```bash
 vol -f dump.vmem windows.memmap --pid <PID> --dump
-python keyscan.py <file_vol_xuat_ra> --pid <PID>
+python tools/keyscan.py <file_vol_xuat_ra> --pid <PID>
 ```
 
 ---
@@ -110,10 +110,10 @@ Khóa để công khai trong JSON. Đây là test vector, không phải mã đ�
 **Chạy:**
 ```bash
 # tạo lô mã hóa cho Đăng test
-python keyholder.py --in samples/plain --out samples/enc_prepend_aes128 --bits 128 --profile prepend
+python tests/keyholder.py --in samples/plain --out samples/enc_prepend_aes128 --bits 128 --profile prepend
 
 # giữ khóa trong RAM để test dump (in ra PID rồi treo chờ Enter)
-python keyholder.py --in samples/plain --out /tmp/enc --profile overwrite16 --hold
+python tests/keyholder.py --in samples/plain --out /tmp/enc --profile overwrite16 --hold
 ```
 
 ---
