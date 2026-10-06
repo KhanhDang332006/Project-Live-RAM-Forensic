@@ -30,16 +30,31 @@ Khóa tìm ra ở **mode normal**, không cần `--byteswap` — trên Windows/A
 
 ## 3. Nhận xét (cho báo cáo – demo nâng cao)
 
-- **Lọc thô có tác dụng rõ:** 18 675 s → 3 239 s, nhanh hơn **~5,8×**. Khớp nhận xét của bài báo
-  rằng công cụ *interrogate* chậm ~100× vì tính key schedule cho **mọi** ứng viên bất kể entropy,
-  còn công cụ có lọc trước thì bỏ qua vùng "chết".
-- **`aeskeyfind` (C) nhanh hơn `keyscan` (Python) ~540×** (5,98 s vs 3 239 s). Đây là hạn chế
-  đã lường trước: `keyscan` là **công cụ nguyên mẫu** (mục tiêu G4.2) để minh họa đúng phương pháp
-  — lọc entropy + xác nhận bằng key schedule — chứ không nhằm chạy nhanh bằng tool C biên dịch sẵn.
-- **Thực tế dùng:** dump lớn (GB) thì dùng `aeskeyfind`/`findaes` cho nhanh; `keyscan` dùng để
-  chứng minh hiểu phương pháp và tùy biến (lọc baseline, byteswap, quét riêng tiến trình).
+**Đọc bảng cho đúng — con số nào là "thực chiến":**
+- Thực chiến (điều tra viên thật) dùng **`aeskeyfind`/`findaes` viết bằng C → ~6 giây**. Đây là
+  con số đáng nói.
+- `keyscan` (nhóm tự viết, thuần Python) là **công cụ nguyên mẫu** (mục tiêu G4.2) để minh họa
+  đúng phương pháp (lọc thô + xác nhận bằng key schedule), **không** nhằm đua tốc độ với tool C.
+- Dòng **không lọc 18 675 s (~5 giờ) chỉ để so sánh**, cho thấy tác dụng của bước lọc thô —
+  **không phải cách dùng thật**. Không ai chạy quét không lọc cả dump trong thực tế.
+
+Từ đó:
+- **Lọc thô có tác dụng rõ:** 18 675 s → 3 239 s, nhanh hơn **~5,8×**. Cùng lý do bài báo nêu:
+  interrogate chậm ~100× vì tính key schedule cho **mọi** ứng viên bất kể entropy.
+- **`aeskeyfind` (C) nhanh hơn `keyscan` (Python) ~540×** (5,98 s vs 3 239 s) — chênh lệch ngôn ngữ
+  biên dịch (C) với thông dịch (Python), đã lường trước.
 - Cả hai cùng ra 4 khóa 128-bit; khóa đầu `51430ec3…` khớp keyholder, 3 khóa còn lại là khóa AES
   khác đang nằm trong RAM tiến trình (thư viện/hệ thống dùng) — đúng kỳ vọng.
+
+**So với công cụ của bài báo:** tác giả cũng tự viết công cụ — **RansomAES** (kết hợp Volatility +
+findaes) để dò khóa và **decrypt.py** để giải mã. `keyscan` + `decrypt.py` của nhóm là bản tương
+ứng. Khác biệt cần nêu thẳng: RansomAES của bài báo **tái dùng lõi C của findaes** nên nhanh ngang
+findaes; `keyscan` của nhóm viết lại thuần Python từ đầu nên chậm hơn. Bài báo **không công bố số
+giây cụ thể**, chỉ nói findaes và RansomAES "thời gian tương đương", interrogate "chậm gần 100 lần".
+
+**Hướng tối ưu nếu cần nhanh:** quét riêng vùng heap của tiến trình nghi ngờ (vài MB thay vì cả
+memmap 765 MB), hoặc đơn giản dùng aeskeyfind/findaes cho phần dò, giữ keyscan cho phần tùy biến
+(lọc baseline, byteswap, quét theo PID).
 
 ## 4. Phát hiện phụ: "cửa sổ thời gian" của key schedule
 

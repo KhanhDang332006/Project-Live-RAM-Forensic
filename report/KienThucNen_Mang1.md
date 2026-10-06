@@ -1,8 +1,4 @@
 # Kiến thức nền – Mảng 1: Điều tra bộ nhớ RAM và khóa AES
-
-> Bản nháp để Minh Hoàng viết lại bằng lời của mình (rubric chấm 1/4 điểm nếu sao chép).
-> Nội dung tổng hợp từ bài báo Davies 2020 và kết quả thực nghiệm của nhóm.
-
 ## 1. Live forensics và dead-box forensics
 
 Pháp chứng máy tính truyền thống (dead-box) phân tích một máy đã tắt, chủ yếu làm việc trên ảnh
@@ -15,14 +11,14 @@ Với ransomware, điều này đặc biệt có ý nghĩa, vì khóa AES dùng 
 trong RAM lúc mã hóa (xem mục 4). Nếu phân tích RAM đúng thời điểm thì có thể lấy lại khóa và giải
 mã ngược file, tức vô hiệu hóa đòn tống tiền mà không cần trả tiền chuộc.
 
-## 2. Thứ tự thu thập theo độ bay hơi (order of volatility)
+## 2. Order of volatility
 
 Dữ liệu càng dễ mất thì càng phải thu trước. Thứ tự ưu tiên thường là: thanh ghi và cache CPU →
 nội dung RAM → trạng thái mạng và các kết nối → tiến trình đang chạy → dữ liệu trên đĩa → bản sao
 lưu, log lưu trữ. Với đề tài này, RAM là nguồn bằng chứng dễ mất nhất và cũng quan trọng nhất,
 nên nó được thu đầu tiên; ảnh đĩa thu sau vì dữ liệu trên đĩa ổn định hơn.
 
-## 3. Các cách chụp bộ nhớ (memory acquisition)
+## 3. Memory acquisition
 
 Theo Ruff, có ba nhóm kỹ thuật chụp RAM:
 
@@ -42,7 +38,7 @@ Theo Ruff, có ba nhóm kỹ thuật chụp RAM:
 Ransomware hiện đại phần lớn là loại lai (Hybrid Crypto-Ransomware, HCR). Nó mã hóa file của nạn
 nhân bằng khóa đối xứng AES cho nhanh, sau đó mã hóa lại chính khóa AES đó bằng khóa công khai RSA.
 Khóa riêng RSA — thứ dùng để giải mã khóa AES — luôn nằm ở máy kẻ tấn công, không bao giờ xuất hiện
-trên máy nạn nhân. Vì vậy truy tìm khóa RSA là vô vọng.
+trên máy nạn nhân. Vì vậy truy tìm khóa RSA là không thể.
 
 Điểm khai thác nằm ở khóa AES. Để mã hóa (và để tự giải mã khi cần), thuật toán bắt buộc phải nạp
 khóa AES vào RAM trong lúc đang chạy. Đây là mắt xích yếu duy nhất có thể khai thác được bằng
@@ -76,11 +72,17 @@ biết trước) lại trở thành chỗ để pháp chứng tóm được khó
   viết bằng C, dựa trên cấu trúc AES key schedule, chạy rất nhanh.
 - **interrogate** (Maartmann-Moe): cũng dựa trên cùng nguyên lý, nhưng chậm hơn khoảng 100 lần vì
   tính key schedule cho mọi ứng viên bất kể entropy.
-- **keyscan** (nhóm tự viết): công cụ nguyên mẫu bằng Python, làm đúng quy trình hai bước (lọc theo
-  số byte phân biệt rồi xác nhận bằng key schedule), có thêm chế độ loại khóa nền (`--baseline`),
-  chế độ đảo byte trong word (`--byteswap`) và quét riêng vùng nhớ một tiến trình.
+- **RansomAES** (tác giả bài báo tự viết): công cụ lai, kết hợp logic của Volatility Framework với
+  logic của findaes. Bài báo cho biết RansomAES có thời gian và kết quả tương đương findaes (phần
+  mở rộng cho ransomware không cải thiện thêm), vì nó tái dùng lõi C của findaes.
+- **keyscan** (nhóm tự viết): công cụ nguyên mẫu bằng Python, đóng vai trò tương tự RansomAES của
+  bài báo. Làm đúng quy trình hai bước (lọc theo số byte phân biệt rồi xác nhận bằng key schedule),
+  có thêm chế độ loại khóa nền (`--baseline`), đảo byte trong word (`--byteswap`) và quét riêng vùng
+  nhớ một tiến trình. Vì viết lại thuần Python từ đầu (không tái dùng lõi C như RansomAES) nên chạy
+  chậm hơn các tool C; thực chiến vẫn nên dùng findaes/aeskeyfind cho phần dò, keyscan dùng để minh
+  họa phương pháp và tùy biến.
 
-Kết quả đo của nhóm (trên dump 765 MB của tiến trình, xem KetQua_Part1.md): keyscan có lọc mất
+Kết quả đo của nhóm (trên dump 765 MB của tiến trình): keyscan có lọc mất
 ~54 phút, không lọc mất ~5 giờ (lọc nhanh hơn ~5,8 lần — cùng lý do với nhận xét về interrogate
 trong bài báo); aeskeyfind viết bằng C chỉ mất khoảng 6 giây. Cả ba đều tìm ra đúng khóa.
 
@@ -91,8 +93,7 @@ Phương pháp chỉ hiệu quả khi thỏa một số điều kiện:
 - **Key schedule chỉ tồn tại khi đang mã hóa.** Thực nghiệm của nhóm xác nhận: khi chương trình mã
   hóa xong và giải phóng context, key schedule biến mất khỏi RAM dù 16 byte khóa thô vẫn còn trong
   biến. Lúc đó mọi công cụ (findaes, aeskeyfind, keyscan) đều không tìm thấy, vì chúng tìm key
-  schedule chứ không tìm 16 byte khóa. Vì vậy phải chụp RAM đúng lúc — đây là lý do cần Part 2
-  (timeline khóa) để canh cửa sổ.
+  schedule chứ không tìm 16 byte khóa. Vì vậy phải chụp RAM đúng lúc
 - **Máy chưa reboot:** khóa AES không sống sót qua khởi động lại.
 - **Mẫu dùng chung một khóa cho mọi file:** WannaCry dùng khóa riêng cho từng file nên không có khóa
   nào dùng lại được, mọi công cụ đều thất bại.
