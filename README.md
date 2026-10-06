@@ -41,12 +41,16 @@ mọi bằng chứng (dump, ảnh đĩa, pcap) ──► hash_evidence.py ──
 ├── DATA_CONTRACT.md        # hợp đồng dữ liệu giữa các script
 ├── requirements.txt
 ├── tools/
+│   ├── aes_schedule.py     # sinh AES key schedule chuẩn Rijndael (verify FIPS-197)
+│   ├── keyscan.py          # Part 1: dò khóa AES trong dump RAM
 │   ├── make_manifest.py    # tạo manifest.csv cho bộ file mồi
 │   ├── decrypt.py          # Part 3: giải mã file .locked bằng khóa ứng viên
 │   └── hash_evidence.py    # chain of custody: hash + ghi log bằng chứng
 ├── tests/
-│   ├── mock_encrypt.py     # mã hóa giả lập đúng hợp đồng dữ liệu (thay keyholder khi test)
+│   ├── keyholder.py        # sinh test-vector, --hold giữ khóa trong RAM (test keyscan)
+│   ├── mock_encrypt.py     # mã hóa giả lập đúng hợp đồng dữ liệu (test decrypt)
 │   └── test_decrypt.py     # test cả chuỗi manifest -> mã hóa -> giải mã
+├── report/                 # báo cáo từng mảng + kết quả thí nghiệm
 └── samples/
     ├── plain/              # file mồi gốc (pdf, doc, docx, xls, xlsx, txt, jpg)
     └── encrypted/          # file đã bị mã hóa (*.locked)

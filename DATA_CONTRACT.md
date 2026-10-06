@@ -100,7 +100,7 @@ Do `keyscan.py` xuất ra.
 Quy tắc:
 
 - **Mỗi cặp dump–khóa là một dòng, không gộp.** Một khóa có mặt trong 10 bản dump thì ghi 10 dòng. Part 2 (timeline khóa) cần biết khóa xuất hiện ở những dump nào.
-- `keyscan.py` mặc định **bỏ các khóa đã có trong bản dump sạch**. Cờ `--no-baseline` tắt bộ lọc này, chỉ dùng khi debug.
+- `keyscan.py` chỉ loại khóa nền khi truyền `--baseline <dump_sạch>` (mặc định không lọc). Dùng để bỏ các khóa đã có sẵn trong RAM **trước khi** nhiễm, chỉ giữ khóa mới do ransomware sinh ra.
 - Độ dài `key_hex` phải khớp với `bits`. decrypt.py coi dòng không khớp là lỗi và bỏ qua.
 
 ## 5. `ground_truth.json`
@@ -265,6 +265,7 @@ mem_0030s.vmem,2026-10-04T15:30:00+07:00,30
 
 - [ ] Hải xác nhận định dạng `capture_log.csv` (mục 10).
 - [ ] Hải sửa mục 5.3 của bảng phân công v2: đổi VirtualBox / `dumpvmcore` thành VMware (`.vmem` + `.vmsn`).
-- [ ] Hoàng xác nhận cài `overwrite16` theo kiểu ở mục 6.2 (bỏ 16 byte đầu, không ghi đè C0).
+- [x] Hoàng xác nhận cài `overwrite16` theo kiểu ở mục 6.2 (bỏ 16 byte đầu, không ghi đè C0). *(đã chốt)*
+- [x] Xác nhận VMware `.vmem` đọc được bằng Volatility (thay cho VirtualBox). *(xem report/KetQua_Part1.md)*
 - [ ] Đăng so hex file gốc và file mã hóa đầu tiên Hoàng gửi, kiểm tra đúng layout ở mục 6.
 - [ ] Đặc tả profile `phobos` (mục 6.3).
