@@ -50,6 +50,7 @@ mọi bằng chứng (dump, ảnh đĩa, pcap) ──► hash_evidence.py ──
 │   ├── keyholder.py        # sinh test-vector, --hold giữ khóa trong RAM (test keyscan)
 │   ├── mock_encrypt.py     # mã hóa giả lập đúng hợp đồng dữ liệu (test decrypt)
 │   └── test_decrypt.py     # test cả chuỗi manifest -> mã hóa -> giải mã
+├── forms/                  # mẫu phiếu chain of custody (docx để điền, pdf để in)
 ├── report/                 # báo cáo từng mảng + kết quả thí nghiệm
 └── samples/
     ├── plain/              # file mồi gốc (pdf, doc, docx, xls, xlsx, txt, jpg)
@@ -155,6 +156,8 @@ python tools/hash_evidence.py list     # tóm tắt các bằng chứng
 ```
 
 `custody_log.csv` chỉ được ghi thêm dòng, không sửa hay xóa dòng cũ.
+
+Song song với log, mỗi bằng chứng có một **phiếu chain of custody** ([forms/PhieuChainOfCustody.docx](forms/PhieuChainOfCustody.docx)): mã bằng chứng, hash, lịch sử giao nhận, chữ ký. Mã bằng chứng trên phiếu phải trùng `evidence_id` trong log.
 
 ## Tiến độ
 
