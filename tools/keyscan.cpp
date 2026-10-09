@@ -1,29 +1,4 @@
 // keyscan.cpp - do khoa AES trong anh bo nho (memory dump), ban C++ cua keyscan.py.
-//
-// Cong cu PHAP CHUNG / PHONG THU: lay lai khoa AES ma ransomware giu trong RAM
-// de giai ma lai file cho nan nhan (Part 1 cua bai bao Davies 2020).
-// Lam theo dung 2 buoc bai bao mo ta (muc 2.2.1, 2.2.2):
-//
-//   1. Loc tho theo entropy Shannon: khoa la du lieu ngau nhien nen entropy
-//      cao; doan nao entropy thap (zero, text, code lap) bi bo qua.
-//   2. Xac nhan bang key schedule: voi moi ung vien 16/24/32 byte, tinh key
-//      schedule chuan Rijndael roi so voi cac byte NGAY SAU trong dump.
-//      Khop 176/208/240 byte -> gan nhu chac chan la khoa AES that.
-//
-// Entropy do tren CHINH doan khoa ung vien (16/24/32 byte), nen tran tren la
-// log2(do dai) bit (16 byte -> toi da 4.0). Nguong mac dinh = log2(do dai) - 1
-// (16 byte -> 3.0; 24 -> 3.58; 32 -> 4.0): khoa ngau nhien gan nhu luon vuot,
-// vung zero/lap thi khong.
-//
-// Bien dich:
-//   g++ -O2 -std=c++17 -o keyscan keyscan.cpp          (Kali / MSYS2)
-// Cach dung:
-//   ./keyscan --selftest
-//   ./keyscan dump.vmem
-//   ./keyscan dump.dmp --bits 128 256 --out keys.json --pid 6372
-//   ./keyscan dump.vmem --baseline clean.vmem
-//   ./keyscan dump.vmem --no-entropy            # tat loc tho (de do thoi gian)
-//   ./keyscan dump.vmem --min-entropy 3.5       # doi nguong (ap cho moi do dai)
 
 #include <array>
 #include <chrono>
@@ -135,7 +110,6 @@ static std::string hexs(const u8* p, int n) {
 }
 
 // Quet mot buffer; base = offset cua buf[0] trong file. Chi xet offset < limit
-// (phan con lai la vung chong lan, chunk sau se xet).
 static void scan_buf(const u8* buf, size_t n, uint64_t base, size_t limit, const Opts& o,
                      std::vector<Found>& found, std::set<std::string>& seen) {
   u8 tmp[240];
