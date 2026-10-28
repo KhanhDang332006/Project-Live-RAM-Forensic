@@ -1,0 +1,15 @@
+﻿evidence_id,timestamp,action,collector,path,size,sha256,description
+E001,2026-10-22T22:28:47+07:00,acquired,Minh Hoàng,C:\evidence\baseline_badrabbit\mem_0000s.vmem,4294967296,f7ae5c015b810e4f93d11968626c1b18edafa5d3f58eaadae411e7968a45558b,Dump baseline sau khi dung lai lab + tat Defender
+E001,2026-10-22T22:28:51+07:00,acquired,Minh Hoàng,C:\evidence\baseline_badrabbit\mem_0000s.vmsn,4199475,28d9784477533b44b95e7e47dd26f9b0984eca71f4507b6172e197fc7741898b,Dump baseline sau khi dung lai lab + tat Defender
+E002,2026-10-22T22:37:44+07:00,acquired,Minh Hoàng,C:\evidence\baseline_badrabbit\mem_0000s.vmem,4294967296,f7ae5c015b810e4f93d11968626c1b18edafa5d3f58eaadae411e7968a45558b,Baseline sau khi dung lai lab moi
+E003,2026-10-23T15:45:46+07:00,acquired,Minh Hoàng,C:\evidence\plain\.gitkeep,0,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855,File .gitkeep bi Bad Rabbit ma hoa
+E004,2026-10-23T15:45:46+07:00,acquired,Minh Hoàng,C:\evidence\plain\baocao_tongket_q3.pdf,62210,9e1dd1532fe9881c82b4e92464127021f31851b4935735fc6a3d41bd54704408,File baocao_tongket_q3.pdf bi Bad Rabbit ma hoa
+E005,2026-10-23T15:45:46+07:00,acquired,Minh Hoàng,C:\evidence\plain\bienban_hop_thang9.doc,28672,72e6471f9b22303e27b5f05f6b26d898e78a596dff4332b3f55b088a33556b49,File bienban_hop_thang9.doc bi Bad Rabbit ma hoa
+E006,2026-10-23T15:45:46+07:00,acquired,Minh Hoàng,C:\evidence\plain\book.zip,194,4cb89ae4636ea78d02e9691969e634db5b1be9a4b4ff6318381a7286fc7251ef,File book.zip bi Bad Rabbit ma hoa
+E007,2026-10-23T15:45:47+07:00,acquired,Minh Hoàng,C:\evidence\plain\data.csv,39,a96c895ce817d59f2d4c231103ea786caf02cf5a54daa6780bfe1e322accf4c0,File data.csv bi Bad Rabbit ma hoa
+E008,2026-10-23T15:45:47+07:00,acquired,Minh Hoàng,C:\evidence\plain\doanhthu_q3.xlsx,18978,2cad92b74146d5269254267fa93acc1c301ce9474bceb5fce027d43ceb50d30b,File doanhthu_q3.xlsx bi Bad Rabbit ma hoa
+E009,2026-10-23T15:45:47+07:00,acquired,Minh Hoàng,C:\evidence\plain\hopdong_muaban.docx,15330,853e242d10b60c6264daa40ef64fdd56b8bdfc7e272b75df7b522ec61063bd10,File hopdong_muaban.docx bi Bad Rabbit ma hoa
+E010,2026-10-23T15:45:47+07:00,acquired,Minh Hoàng,C:\evidence\plain\note.txt,71,d05e0e46fd57d33bbe1d687601a5a437993f96023fd28ba52f720dba9bb4d675,File note.txt bi Bad Rabbit ma hoa
+E011,2026-10-23T15:45:47+07:00,acquired,Minh Hoàng,C:\evidence\plain\report.pdf,114,e218e1c3d576728ffac462b14ad2df5ba6c8f224558eafcfc6aebdad70840a9f,File report.pdf bi Bad Rabbit ma hoa
+E012,2026-10-23T15:45:47+07:00,acquired,Minh Hoàng,C:\evidence\plain\sodo_phongban.jpg,211986,582e3e6012e2bc1e049357c1c535082058715d5f66d9c25e304eac4fab2b7d72,File sodo_phongban.jpg bi Bad Rabbit ma hoa
+E013,2026-10-23T15:45:47+07:00,acquired,Minh Hoàng,C:\evidence\plain\tonkho_cuoiky.xls,42546,ff7dc517bc2805afd08ce1f870e3e3239a3f5f1e37ae1e2e804f237d4606bb9e,File tonkho_cuoiky.xls bi Bad Rabbit ma hoa

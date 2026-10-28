@@ -2,6 +2,7 @@
 # Windows mặc định core.autocrlf=true: git chèn 0x0D trước mỗi 0x0A khi checkout,
 # làm SHA-256 của file mồi lệch và hỏng ciphertext của file .locked.
 samples/** -text
+**/samples/** -text
 *.locked binary
 *.vmem binary
 *.vmsn binary
