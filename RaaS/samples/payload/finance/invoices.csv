@@ -1,0 +1,9 @@
+invoice_id,customer_id,invoice_date,due_date,description,amount_vnd,payment_status
+INV2026001,CUST001,2026-07-05,2026-08-05,Software Subscription,25000000,Paid
+INV2026002,CUST002,2026-07-12,2026-08-12,Technical Support,18000000,Paid
+INV2026003,CUST003,2026-08-01,2026-09-01,Cloud Infrastructure,32000000,Pending
+INV2026004,CUST004,2026-08-10,2026-09-10,System Integration,75000000,Paid
+INV2026005,CUST005,2026-08-15,2026-09-15,Consulting Services,12000000,Overdue
+INV2026006,CUST006,2026-09-02,2026-10-02,Software Subscription,28000000,Pending
+INV2026007,CUST007,2026-09-10,2026-10-10,Infrastructure Upgrade,45000000,Overdue
+INV2026008,CUST008,2026-09-20,2026-10-20,Technical Support,15000000,Paid
