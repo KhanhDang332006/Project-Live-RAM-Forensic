@@ -1,9 +1,0 @@
-customer_id,customer_name,email,phone,company,contract_value,status
-CUST001,Nguyen Minh Anh,minhanh@example.test,0900000001,Alpha Trading,125000000,Active
-CUST002,Tran Quoc Bao,quocbao@example.test,0900000002,Beta Logistics,87500000,Active
-CUST003,Le Thu Ha,thuha@example.test,0900000003,Gamma Retail,56000000,Pending
-CUST004,Pham Duc Long,duclong@example.test,0900000004,Delta Technology,210000000,Active
-CUST005,Vo Ngoc Linh,ngoclinh@example.test,0900000005,Epsilon Media,43000000,Inactive
-CUST006,Do Thanh Nam,thanhnam@example.test,0900000006,Zeta Consulting,97000000,Active
-CUST007,Bui Khanh Vy,khanhvy@example.test,0900000007,Eta Manufacturing,153000000,Pending
-CUST008,Hoang Gia Huy,giahuy@example.test,0900000008,Theta Services,68000000,Active

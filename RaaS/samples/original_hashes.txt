@@ -1,6 +1,0 @@
-2085994f8b2d421c5fd3a08b5b94af524e2565a3fef5048beb886eec5560f7fa  ./customers/customer_list.csv
-9d2ee57ae5bba5c0dce6e22f82ebb5f3a8130a4e25ae908e251cb955522f0938  ./customers/customer_notes.txt
-dabba65863cc49a5317e81b75fcc72f972f8c8504ace201d53be437d44d4e57a  ./documents/internal_policy.txt
-0d634fbf08f5a177a7d248f950631cc751c9156d50b4402c6b51c7e1a9cc9add  ./documents/project_plan.txt
-44aeea4280e1cfd5817bc8e838d989f2a6c808111e88e832e975d2dfddcb0ec1  ./finance/invoices.csv
-47ce79239c552d4e1416608c4ed55417694aa73f92f0d07737deb36dfdcba5db  ./finance/quaterly_report.txt
