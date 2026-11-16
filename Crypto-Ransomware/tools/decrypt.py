@@ -43,6 +43,8 @@ REPORT_FIELDS = ["file", "profile", "key_tool", "key_source", "key_hex",
 PROFILES = {
     "prepend":     {"iv_offset": 0, "ct_start": 16, "ct_end": None, "lost_head": 0},
     "overwrite16": {"iv_offset": 0, "ct_start": 16, "ct_end": None, "lost_head": 16},
+    # NotPetya: CryptoAPI không đặt KP_IV nên IV = 0, cả file là ciphertext, không mất byte nào.
+    "zeroiv":      {"iv_offset": None, "ct_start": 0, "ct_end": None, "lost_head": 0},
 }
 
 OLE = bytes.fromhex("d0cf11e0a1b11ae1")
@@ -105,6 +107,8 @@ def load_manifest(path):
 # ---------------------------------------------------------------- AES
 
 def split(blob, prof):
+    if prof["iv_offset"] is None:
+        return b"\0" * 16, blob[prof["ct_start"]:prof["ct_end"]]
     off = prof["iv_offset"] + (len(blob) if prof["iv_offset"] < 0 else 0)
     return blob[off:off + 16], blob[prof["ct_start"]:prof["ct_end"]]
 

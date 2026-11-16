@@ -13,3 +13,29 @@ E010,2026-10-23T15:45:47+07:00,acquired,Minh Hoàng,C:\evidence\plain\note.txt,7
 E011,2026-10-23T15:45:47+07:00,acquired,Minh Hoàng,C:\evidence\plain\report.pdf,114,e218e1c3d576728ffac462b14ad2df5ba6c8f224558eafcfc6aebdad70840a9f,File report.pdf bi Bad Rabbit ma hoa
 E012,2026-10-23T15:45:47+07:00,acquired,Minh Hoàng,C:\evidence\plain\sodo_phongban.jpg,211986,582e3e6012e2bc1e049357c1c535082058715d5f66d9c25e304eac4fab2b7d72,File sodo_phongban.jpg bi Bad Rabbit ma hoa
 E013,2026-10-23T15:45:47+07:00,acquired,Minh Hoàng,C:\evidence\plain\tonkho_cuoiky.xls,42546,ff7dc517bc2805afd08ce1f870e3e3239a3f5f1e37ae1e2e804f237d4606bb9e,File tonkho_cuoiky.xls bi Bad Rabbit ma hoa
+E014,2026-11-16T15:18:53+07:00,acquired,Minh Hoàng,C:\evidence\baseline\mem_0000s.vmem,2147483648,d9ee9dd523d1c84d943bcc1543f1575d623bca607e1e3135f9a9855bdcec9db9,Baseline RAM Victim truoc khi nhiem NotPetya
+E014,2026-11-16T15:18:55+07:00,acquired,Minh Hoàng,C:\evidence\baseline\mem_0000s.vmsn,2654493,e081c157879fc9a4b022e0a2d28e574839ddf5933d9a53ecb2ccf93b99204db5,Baseline RAM Victim truoc khi nhiem NotPetya
+E015,2026-11-16T17:01:49+07:00,acquired,Minh Hoàng,C:\evidence\notpetya_run\mem_0000s.vmem,2147483648,0f48e9026853d3508934f3ad432d194fa017987998c8ec483656c3c607a93897,Dump RAM NotPetya mem_0000s
+E015,2026-11-16T17:01:50+07:00,acquired,Minh Hoàng,C:\evidence\notpetya_run\mem_0000s.vmsn,2409606,239ae7f83819c80a1078fb6482a23b552218ddf080bb7320c08ec4f26dc9550a,Dump RAM NotPetya mem_0000s
+E016,2026-11-16T17:01:50+07:00,acquired,Minh Hoàng,C:\evidence\notpetya_run\mem_0120s.vmem,2147483648,3464fd561cb58784fb2c3345953e423cc68313b0a2265c87b44660a08e72db7d,Dump RAM NotPetya mem_0120s
+E016,2026-11-16T17:01:52+07:00,acquired,Minh Hoàng,C:\evidence\notpetya_run\mem_0120s.vmsn,2410478,055dd614b8917b083457a9d7cb578f021bbf9546316225501d7e0f47eecd75f0,Dump RAM NotPetya mem_0120s
+E017,2026-11-16T17:01:52+07:00,acquired,Minh Hoàng,C:\evidence\notpetya_run\mem_0240s.vmem,2147483648,015c82fc2afaa2bc7363ddee32e4f065ac5c5bec0e3cb0dcbe6745525be39b88,Dump RAM NotPetya mem_0240s
+E017,2026-11-16T17:01:54+07:00,acquired,Minh Hoàng,C:\evidence\notpetya_run\mem_0240s.vmsn,2503214,b3273393a2f3a2363c3ada5356a0a4409c6f2cd9dd813b4e8fcbad76e9c74f37,Dump RAM NotPetya mem_0240s
+E018,2026-11-16T17:01:54+07:00,acquired,Minh Hoàng,C:\evidence\notpetya_run\mem_0360s.vmem,2147483648,7990b5bf33ce2547d2a9e4171a0e6ce95119cceb991485a1c74f09815e6c7513,Dump RAM NotPetya mem_0360s
+E018,2026-11-16T17:01:55+07:00,acquired,Minh Hoàng,C:\evidence\notpetya_run\mem_0360s.vmsn,2860108,e6de69e3a0af02193fb27132fc2e5104ad3de3625330115814e34c29500bac0b,Dump RAM NotPetya mem_0360s
+E019,2026-11-16T17:01:56+07:00,acquired,Minh Hoàng,C:\evidence\notpetya_run\mem_0480s.vmem,2147483648,a5bc1d57a9c62193b010a97e199971a8de7995d47f27defc535d854c5a2f712c,Dump RAM NotPetya mem_0480s
+E019,2026-11-16T17:01:57+07:00,acquired,Minh Hoàng,C:\evidence\notpetya_run\mem_0480s.vmsn,2893823,ade6fd7d537f6403ac218125f2c1d2a43fc66ed78d464343cc4477ca99d8488d,Dump RAM NotPetya mem_0480s
+E020,2026-11-16T17:01:57+07:00,acquired,Minh Hoàng,C:\evidence\notpetya_run\mem_0600s.vmem,2147483648,c13f82275a13abb660000e14652a79d6d0c1598e62e8719d0b73be127c99703b,Dump RAM NotPetya mem_0600s
+E020,2026-11-16T17:01:59+07:00,acquired,Minh Hoàng,C:\evidence\notpetya_run\mem_0600s.vmsn,2921037,a2e2a6ffacd3441789ec0f5e5d7a81677bc678e8a4810762fda857145c89b64a,Dump RAM NotPetya mem_0600s
+E021,2026-11-16T17:01:59+07:00,acquired,Minh Hoàng,C:\evidence\notpetya_run\mem_0720s.vmem,2147483648,4e5e3945e542e208c47f871cfd2cc6ddb39be74c7a094b5b4cbc861385ae3776,Dump RAM NotPetya mem_0720s
+E021,2026-11-16T17:02:01+07:00,acquired,Minh Hoàng,C:\evidence\notpetya_run\mem_0720s.vmsn,2921283,a308d5b0d79b463aa0372b97b6825704add0d36b87d559b2d3f9a8d8b48a1847,Dump RAM NotPetya mem_0720s
+E022,2026-11-16T17:02:01+07:00,acquired,Minh Hoàng,C:\evidence\notpetya_run\mem_0840s.vmem,2147483648,89e5f62b5990efb6fca221a133f3e2fe042ba4ef3e00aa1b5295851e969c96b5,Dump RAM NotPetya mem_0840s
+E022,2026-11-16T17:02:02+07:00,acquired,Minh Hoàng,C:\evidence\notpetya_run\mem_0840s.vmsn,2921247,f10c0a0cd6bd29967c2476738013457964ff05c514dc14b4883e02c82cafe8fe,Dump RAM NotPetya mem_0840s
+E023,2026-11-16T17:02:02+07:00,acquired,Minh Hoàng,C:\evidence\notpetya_run\mem_0960s.vmem,2147483648,34ddee657dafcceb0eb9068201602386e73b0dc89816f4847aa6f367f861963f,Dump RAM NotPetya mem_0960s
+E023,2026-11-16T17:02:04+07:00,acquired,Minh Hoàng,C:\evidence\notpetya_run\mem_0960s.vmsn,2860205,d5cf314449603e82f2452e588755390aa8833da49f8f7a2f2cdf68dbd2bdc8aa,Dump RAM NotPetya mem_0960s
+E024,2026-11-16T17:02:04+07:00,acquired,Minh Hoàng,C:\evidence\notpetya_run\mem_1080s.vmem,2147483648,3631a189496b568e44f8e5e5b5d25fe185c295480e42652b057b32efee51b4e2,Dump RAM NotPetya mem_1080s
+E024,2026-11-16T17:02:06+07:00,acquired,Minh Hoàng,C:\evidence\notpetya_run\mem_1080s.vmsn,2915745,b89ec510ab0cda347363a976a72bdab19c3826f593a11174125730ba264449a1,Dump RAM NotPetya mem_1080s
+E025,2026-11-16T17:02:06+07:00,acquired,Minh Hoàng,C:\evidence\notpetya_run\mem_1200s.vmem,2147483648,f8a684653f4d8073a2f3f9947df93afea129b8918fd7383f16fd3417d4c70a57,Dump RAM NotPetya mem_1200s
+E025,2026-11-16T17:02:07+07:00,acquired,Minh Hoàng,C:\evidence\notpetya_run\mem_1200s.vmsn,2899223,06194518a32f33fa7f232223dc8cc3a6bb642b8b3d949758cdd901b68024b52c,Dump RAM NotPetya mem_1200s
+E026,2026-11-16T17:02:08+07:00,acquired,Minh Hoàng,C:\evidence\notpetya_run\mem_1320s.vmem,2147483648,654f30100d298c09321fed17db20a6653cb246e90e8c04bdb2886a53a6d05700,Dump RAM NotPetya mem_1320s
+E026,2026-11-16T17:02:09+07:00,acquired,Minh Hoàng,C:\evidence\notpetya_run\mem_1320s.vmsn,2899895,2059f5da781f6a5c9b6026ca36e421893261e3f187d72d944f4ba066ad1e9439,Dump RAM NotPetya mem_1320s
