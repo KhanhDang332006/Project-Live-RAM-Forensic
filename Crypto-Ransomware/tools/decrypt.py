@@ -45,6 +45,8 @@ PROFILES = {
     "overwrite16": {"iv_offset": 0, "ct_start": 16, "ct_end": None, "lost_head": 16},
     # NotPetya: CryptoAPI không đặt KP_IV nên IV = 0, cả file là ciphertext, không mất byte nào.
     "zeroiv":      {"iv_offset": None, "ct_start": 0, "ct_end": None, "lost_head": 0},
+    # Phobos: [ciphertext][tên file mã hóa][20 byte 0][IV 16][số byte đệm u32][khối 128][độ dài footer u32][marker 6]
+    "phobos":      {"iv_offset": -158, "ct_start": 0, "ct_end": None, "lost_head": 0, "trailer": "phobos"},
 }
 
 OLE = bytes.fromhex("d0cf11e0a1b11ae1")
@@ -107,6 +109,9 @@ def load_manifest(path):
 # ---------------------------------------------------------------- AES
 
 def split(blob, prof):
+    if prof.get("trailer") == "phobos":
+        footer = int.from_bytes(blob[-10:-6], "little")
+        return blob[-158:-142], blob[:-footer]
     if prof["iv_offset"] is None:
         return b"\0" * 16, blob[prof["ct_start"]:prof["ct_end"]]
     off = prof["iv_offset"] + (len(blob) if prof["iv_offset"] < 0 else 0)
@@ -230,14 +235,19 @@ def decrypt_file(path, keys, profile, mrow=None, patch="auto", name=None, verifi
         row.update(status="error", note="ciphertext %d byte không chia hết cho 16, sai profile?" % len(ct))
         return row, None
 
+    # Phobos ghi số byte đệm vào footer thay vì dùng PKCS7, nên không lọc khóa bằng padding được.
+    pad = int.from_bytes(blob[-142:-138], "little") if prof.get("trailer") == "phobos" else None
     fallback, weak_skipped = None, False
     for k in keys:
-        if not padding_ok(k["raw"], iv, ct):
-            continue
-        try:
-            data = unpad(AES.new(k["raw"], AES.MODE_CBC, iv).decrypt(ct), 16)
-        except ValueError:
-            continue
+        if pad is not None:
+            data = AES.new(k["raw"], AES.MODE_CBC, iv).decrypt(ct)[:len(ct) - pad]
+        else:
+            if not padding_ok(k["raw"], iv, ct):
+                continue
+            try:
+                data = unpad(AES.new(k["raw"], AES.MODE_CBC, iv).decrypt(ct), 16)
+            except ValueError:
+                continue
         head, how, note = patch_head(ext, data, lost, patch, mrow)
         out = head + data
         sha_ok = bool(mrow) and hashlib.sha256(out).hexdigest() == mrow["sha256"]
