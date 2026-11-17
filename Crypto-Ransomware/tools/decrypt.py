@@ -26,6 +26,7 @@ import hashlib
 import json
 import math
 import os
+import re
 import sys
 from collections import Counter
 
@@ -36,6 +37,45 @@ except ImportError:
     sys.exit("Thiếu pycryptodome: python -m pip install -r requirements.txt")
 
 SUFFIX = ".locked"
+
+# Tên file SAU khi mã hóa khác nhau theo từng dòng ransomware:
+#   keep   : giữ NGUYÊN tên gốc  -> NotPetya, Bad Rabbit (mã hóa ghi đè tại chỗ, không đổi tên)
+#   phobos : tên_gốc.id[<id>].[<email>].<ext>  -> Phobos đổi tên
+#   locked : tên_gốc + ".locked"               -> mock_encrypt / test của nhóm
+# Không mẫu thật nào thêm ".locked"; đuôi đó chỉ là quy ước nội bộ khi làm test.
+PHOBOS_RE = re.compile(r"\.id\[[^\]]*\]\.\[[^\]]*\]\.[^.\\/]+$", re.IGNORECASE)
+
+
+def original_name(name, scheme):
+    """Suy tên gốc từ tên file đã mã hóa, theo scheme đặt tên."""
+    if scheme == "phobos":
+        return PHOBOS_RE.sub("", name)
+    if scheme == "locked" and name.endswith(SUFFIX):
+        return name[:-len(SUFFIX)]
+    return name  # keep: tên không đổi
+
+
+def is_candidate(name, scheme):
+    """File này có phải file đã mã hóa cần giải không (lọc theo scheme)."""
+    if scheme == "phobos":
+        return bool(PHOBOS_RE.search(name))
+    if scheme == "locked":
+        return name.endswith(SUFFIX)
+    return not os.path.basename(name).startswith(".")  # keep: thử mọi file thường (bỏ file ẩn)
+
+
+def detect_scheme(src):
+    """Tự nhận scheme từ tên file trong thư mục: ưu tiên phobos > locked > keep."""
+    phobos = locked = False
+    for _, _, names in os.walk(src):
+        for n in names:
+            if PHOBOS_RE.search(n):
+                phobos = True
+            elif n.endswith(SUFFIX):
+                locked = True
+    return "phobos" if phobos else "locked" if locked else "keep"
+
+
 REPORT_FIELDS = ["file", "profile", "key_tool", "key_source", "key_hex",
                  "header_patch", "magic_ok", "sha256_ok", "status", "note"]
 
@@ -213,15 +253,18 @@ def tf(b):
 
 # ---------------------------------------------------------------- giải mã
 
-def decrypt_file(path, keys, profile, mrow=None, patch="auto", name=None, verified=()):
+def decrypt_file(path, keys, profile, mrow=None, patch="auto", name=None, verified=(), orig=None):
     """Thử lần lượt các khóa trên một file. Trả về (dòng report, dữ liệu đã giải mã hoặc None).
 
+    name: tên file đã mã hóa (hiển thị trong report). orig: tên gốc suy ra (để lấy đuôi + tra manifest);
+    None thì mặc định bóc ".locked" như cũ.
     verified: các khóa đã giải mã đúng file khác. File quá nhỏ để tự kiểm chứng (khóa rác lọt
     padding cũng cho ra kết quả "hợp lệ") chỉ nhận khóa trong tập này.
     """
     prof = PROFILES[profile] if isinstance(profile, str) else profile
     name = name or os.path.basename(path)
-    orig = name[:-len(SUFFIX)] if name.endswith(SUFFIX) else name
+    if orig is None:
+        orig = name[:-len(SUFFIX)] if name.endswith(SUFFIX) else name
     ext = os.path.splitext(orig)[1].lstrip(".").lower()
     lost = prof["lost_head"]
     row = dict.fromkeys(REPORT_FIELDS, "")
@@ -294,30 +337,36 @@ def _finish(row, k, out, how, note, mrow, ext, sha, strong):
     return row
 
 
-def run(src, keys, profile, manifest, patch="auto", out_dir=None):
-    """Giải mã mọi file .locked trong src. Ghi file ra out_dir (nếu có). Trả về các dòng report."""
+def run(src, keys, profile, manifest, patch="auto", out_dir=None, naming="auto"):
+    """Giải mã các file đã mã hóa trong src. Ghi file ra out_dir (nếu có). Trả về các dòng report.
+
+    naming: scheme đặt tên file mã hóa (auto/keep/locked/phobos) — xem original_name()/is_candidate().
+    File ghi ra dùng TÊN GỐC suy từ scheme (NotPetya giữ nguyên tên, Phobos bóc đuôi .id[..].[..].ext).
+    """
+    scheme = detect_scheme(src) if naming == "auto" else naming
     files = []
     for dirpath, _, names in os.walk(src):
         for n in names:
-            if n.endswith(SUFFIX):
-                p = os.path.join(dirpath, n)
-                files.append((os.path.relpath(p, src).replace(os.sep, "/"), p))
+            p = os.path.join(dirpath, n)
+            rel = os.path.relpath(p, src).replace(os.sep, "/")
+            if is_candidate(rel, scheme):
+                files.append((rel, p))
     files.sort(key=lambda f: -os.path.getsize(f[1]))  # file lớn kiểm chứng khóa chắc chắn hơn: làm trước
 
     hits = Counter()
     rows = []
     for rel, path in files:
+        orig = original_name(rel, scheme)
         ordered = sorted(keys, key=lambda k: -hits[k["key_hex"]])  # khóa đã đúng ở file khác thử trước
-        row, data = decrypt_file(path, ordered, profile, manifest.get(rel[:-len(SUFFIX)]), patch, rel,
-                                 verified=set(hits))
+        row, data = decrypt_file(path, ordered, profile, manifest.get(orig), patch, rel,
+                                 verified=set(hits), orig=orig)
         if row.pop("_strong", False):
             hits[row["key_hex"]] += 1
-        if data is not None:
-            if out_dir:
-                dst = os.path.join(out_dir, rel[:-len(SUFFIX)])
-                os.makedirs(os.path.dirname(dst) or ".", exist_ok=True)
-                with open(dst, "wb") as f:
-                    f.write(data)
+        if data is not None and out_dir:
+            dst = os.path.join(out_dir, orig)
+            os.makedirs(os.path.dirname(dst) or ".", exist_ok=True)
+            with open(dst, "wb") as f:
+                f.write(data)
         rows.append(row)
     rows.sort(key=lambda r: r["file"])
     return rows
@@ -336,11 +385,14 @@ def main():
     if hasattr(sys.stdout, "reconfigure"):  # console Windows mặc định cp1252, in tiếng Việt sẽ lỗi
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
         sys.stderr.reconfigure(encoding="utf-8", errors="replace")
-    ap = argparse.ArgumentParser(description="Giải mã file .locked bằng khóa AES ứng viên (Part 3)")
+    ap = argparse.ArgumentParser(description="Giải mã file bị ransomware mã hóa bằng khóa AES ứng viên (Part 3)")
     ap.add_argument("--keys", nargs="+", required=True, help="keys.json và/hoặc ground_truth.json")
-    ap.add_argument("--in", dest="src", default="samples/encrypted", help="thư mục file .locked")
+    ap.add_argument("--in", dest="src", default="samples/encrypted", help="thư mục chứa file đã mã hóa")
     ap.add_argument("--profile", choices=sorted(PROFILES) + ["custom"],
                     help="mặc định: lấy từ trường profile của ground_truth.json")
+    ap.add_argument("--naming", choices=["auto", "keep", "locked", "phobos"], default="auto",
+                    help="tên file mã hóa: keep=giữ nguyên (NotPetya/Bad Rabbit), "
+                         "phobos=tên.id[..].[email].ext, locked=+.locked (mock/test), auto=tự nhận")
     ap.add_argument("--manifest", default="manifest.csv", help='viết --manifest= (bỏ trống) để không dùng, giống điều tra thật')
     ap.add_argument("--patch", choices=["auto", "manifest", "template", "none"], default="auto",
                     help="cách vá header khi mất byte đầu (auto: manifest nếu có, không thì template)")
@@ -375,9 +427,9 @@ def main():
     if not os.path.isdir(args.src):
         sys.exit("Không thấy thư mục: %s" % args.src)
     manifest = load_manifest(args.manifest)
-    rows = run(args.src, keys, profile, manifest, args.patch, args.out)
+    rows = run(args.src, keys, profile, manifest, args.patch, args.out, args.naming)
     if not rows:
-        sys.exit("Không có file %s nào trong %s" % (SUFFIX, args.src))
+        sys.exit("Không có file đã mã hóa nào trong %s (naming=%s)" % (args.src, args.naming))
     write_report(rows, args.report)
 
     print("Profile: %s | %d khóa ứng viên | %d file"
